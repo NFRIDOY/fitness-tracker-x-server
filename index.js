@@ -101,10 +101,51 @@ async function run() {
             }
         })
 
+        // DB
+
+        const database = client.db("FitnessTrackerXDB");
+        const usersCollection = database.collection("Users");
+
+        app.post("/api/v1/users", async (req, res) => {
+            // const userEmail = req.body.email
+            // const userName = req.body.name
+            // const userRole = req.body.role
+
+            // const userOne = {
+            //     userName,
+            //     userEmail,
+            //     userRole
+            // }
+
+            const user = req.body;
+
+            const filter = { email: user.email };
+
+            const existingUser = await usersCollection.findOne(filter);
+            console.log(existingUser)
+
+            if (existingUser) {
+                return res.send({ message: 'user already exists', insertedId: null })
+            }
+            else {
+                const result = await usersCollection.insertOne(userOne);
+                res.send(result);
+            }
+
+            // const updateDoc = {
+            //     $set: {
+            //         name: userName,
+            //         email: userEmail,
+            //         role: userRole
+            //     },
+            // };
+
+        })
+
         // Logout 
 
-        app.post('/api/v1/logout', async (req, res) => {
-            const user = req.body;
+        app.get('/api/v1/logout', async (req, res) => {
+            // const user = req.body;
             res.clearCookie('token', { maxAge: 0 }).send({ success: true })
         })
 
