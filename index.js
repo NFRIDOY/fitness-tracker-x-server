@@ -5,12 +5,22 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require('dotenv').config()
+const jwt = require("jsonwebtoken"); // npm install jsonwebtoken
+const cookieParser = require("cookie-parser"); // npm install cookie-parser
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+// Middleware
+// app.use(cors());
+app.use(cors({
+    origin: ["https://fitness-tracker-x.web.app", "http://localhost:5173", "http://localhost:5174"],
+    // origin: ["https://job-market-x.web.app"],
+    credentials: true
+}));
 app.use(express.json());
+// app.use(express.json());
+app.use(cookieParser())
 
 // handle Requests
 let userArray = [];
@@ -18,10 +28,10 @@ const handleRequests = (user) => {
     // userArray.push(user);
 }
 
-// const uri = "mongodb+srv://<username></username>:<password>@cluster0.hlezmce.mongodb.net/?retryWrites=true&w=majority";
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hlezmce.mongodb.net/?retryWrites=true&w=majority`;
-console.log(process.env.DB_USER)
-console.log(process.env.DB_USER)
+// console.log(process.env.DB_USER)
+// console.log(process.env.DB_PASS)
+// console.log(process.env.URI)
+const uri = process.env.URI
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
