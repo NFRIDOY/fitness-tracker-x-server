@@ -23,9 +23,32 @@ app.use(express.json());
 app.use(cookieParser())
 
 // handle Requests
-let userArray = [];
-const handleRequests = (user) => {
-    // userArray.push(user);
+// let userArray = [];
+// const handleRequests = (user) => {
+//     // userArray.push(user);
+// }
+
+const verifyToken = async (req, res, next) => {
+    const token = req.cookies?.token;
+    const emailReq = req.query.email;
+
+    console.log(token);
+    if (!token) {
+        return res.status(401).send({ message: 'Unauthorized Access, No Token' })
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: 'Unauthorized Access' })
+        }
+        console.log("verifyToken: verify")
+        console.log("decoded", decoded)
+        req.user = decoded;
+        // if (req.user.email === emailReq) {
+        //     return res.status(403).send({ message: 'Forbiden Access' })
+        // }
+
+        next()
+    })
 }
 
 // console.log(process.env.DB_USER)
