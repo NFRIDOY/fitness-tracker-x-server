@@ -100,6 +100,15 @@ async function run() {
                 console.log(error)
             }
         })
+
+        // Logout 
+
+        app.post('/api/v1/logout', async (req, res) => {
+            const user = req.body;
+            res.clearCookie('token', { maxAge: 0 }).send({ success: true })
+        })
+
+        
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
