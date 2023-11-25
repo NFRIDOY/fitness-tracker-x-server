@@ -68,10 +68,38 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
+        client.connect();
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
+        client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
+        // jwt
+        app.post("/api/v1/jwt", async (req, res) => {
+            try {
+                const user = req.body;
+                console.log(user)
+                const token = await jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,
+                    {
+                        expiresIn: '1h'
+                    }
+                )
+
+                console.log("token", token)
+
+
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+
+                })
+                    .send({ message: 'true' })
+            } catch (error) {
+                console.log(error)
+            }
+        })
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
