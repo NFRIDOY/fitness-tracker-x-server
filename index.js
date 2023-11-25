@@ -75,7 +75,7 @@ async function run() {
         client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-        // jwt
+        // /api/v1/jwt
         app.post("/api/v1/jwt", async (req, res) => {
             try {
                 const user = req.body;
@@ -108,7 +108,7 @@ async function run() {
             res.clearCookie('token', { maxAge: 0 }).send({ success: true })
         })
 
-        
+
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
