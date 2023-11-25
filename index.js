@@ -72,22 +72,22 @@ async function run() {
         client.connect();
         // Send a ping to confirm a successful connection
         // await client.db("admin").command({ ping: 1 });
-        client.db("admin").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
+        // client.db("admin").command({ ping: 1 });
+        // console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
         // /api/v1/jwt
         app.post("/api/v1/jwt", async (req, res) => {
             try {
                 const user = req.body;
-                console.log(user)
+                // console.log(user)
                 const token = await jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,
                     {
                         expiresIn: '1h'
                     }
                 )
 
-                console.log("token", token)
-
+                // console.log("token", token)
+                console.log("Grenarrated token")
 
                 res.cookie('token', token, {
                     httpOnly: true,
@@ -105,6 +105,7 @@ async function run() {
 
         const database = client.db("FitnessTrackerXDB");
         const usersCollection = database.collection("Users");
+        const subscribersCollection = database.collection("subscribers");
 
         app.post("/api/v1/users", async (req, res) => {
             // const userEmail = req.body.email
@@ -120,6 +121,7 @@ async function run() {
             const user = req.body;
 
             const filter = { email: user.email };
+            console.log(filter)
 
             const existingUser = await usersCollection.findOne(filter);
             console.log(existingUser)
@@ -128,7 +130,7 @@ async function run() {
                 return res.send({ message: 'user already exists', insertedId: null })
             }
             else {
-                const result = await usersCollection.insertOne(userOne);
+                const result = await usersCollection.insertOne(user);
                 res.send(result);
             }
 
@@ -149,7 +151,27 @@ async function run() {
             res.clearCookie('token', { maxAge: 0 }).send({ success: true })
         })
 
+        app.post('/api/v1/subscribers', async (req, res) => {
+            const subscriber = req.body;
+            const filter = { email: subscriber.email };
+            console.log(filter)
 
+            const existingUser = await subscribersCollection.findOne(filter);
+            if(existingUser) {
+                return res.send({ message: 'subscriber already exists', insertedId: null })
+            }
+            else {
+                const result = await subscribersCollection.insertOne(subscriber);
+                res.send(result);
+            }
+        })
+
+
+
+
+
+        client.db("admin").command({ ping: 1 });
+        console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
         // await client.close();
