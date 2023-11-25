@@ -51,6 +51,18 @@ const verifyToken = async (req, res, next) => {
     })
 }
 
+// use verify admin after verifyToken
+const verifyAdmin = async (req, res, next) => {
+    const email = req.decoded.email;
+    const query = { email: email };
+    const user = await userCollection.findOne(query);
+    const isAdmin = user?.role === 'admin';
+    if (!isAdmin) {
+        return res.status(403).send({ message: 'forbidden access' });
+    }
+    next();
+}
+
 // console.log(process.env.DB_USER)
 // console.log(process.env.DB_PASS)
 // console.log(process.env.URI)
@@ -107,6 +119,11 @@ async function run() {
         const usersCollection = database.collection("Users");
         const subscribersCollection = database.collection("subscribers");
 
+        app.get('/api/v1/logout', async (req, res) => {
+            // const user = req.body;
+            res.clearCookie('token', { maxAge: 0 }).send({ success: true })
+        })
+
         app.post("/api/v1/users", async (req, res) => {
             // const userEmail = req.body.email
             // const userName = req.body.name
@@ -120,8 +137,9 @@ async function run() {
 
             const user = req.body;
 
-            const filter = { email: user.email };
-            console.log(filter)
+            const filter = { email: user?.email };
+            // console.log(filter)
+            console.log(user.role)
 
             const existingUser = await usersCollection.findOne(filter);
             console.log(existingUser)
@@ -130,8 +148,25 @@ async function run() {
                 return res.send({ message: 'user already exists', insertedId: null })
             }
             else {
-                const result = await usersCollection.insertOne(user);
-                res.send(result);
+                if (user.role) {
+                    const result = await usersCollection.insertOne(user);
+                    res.send(result);
+                }
+                else {
+                    const { name, email } = user
+                    const options = { upsert: true };
+
+                    const updateRole = {
+                        $set: {
+                            name: name,
+                            email: email,
+                            role: "member"
+                        },
+                    };
+                    const result = await usersCollection.updateOne(filter, updateRole, options);
+                    res.send(result)
+                }
+
             }
 
             // const updateDoc = {
@@ -146,10 +181,7 @@ async function run() {
 
         // Logout 
 
-        app.get('/api/v1/logout', async (req, res) => {
-            // const user = req.body;
-            res.clearCookie('token', { maxAge: 0 }).send({ success: true })
-        })
+
 
         app.post('/api/v1/subscribers', async (req, res) => {
             const subscriber = req.body;
@@ -157,7 +189,7 @@ async function run() {
             console.log(filter)
 
             const existingUser = await subscribersCollection.findOne(filter);
-            if(existingUser) {
+            if (existingUser) {
                 return res.send({ message: 'subscriber already exists', insertedId: null })
             }
             else {
