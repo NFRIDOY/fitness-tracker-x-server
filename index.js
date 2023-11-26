@@ -118,6 +118,7 @@ async function run() {
         const database = client.db("FitnessTrackerXDB");
         const usersCollection = database.collection("Users");
         const subscribersCollection = database.collection("subscribers");
+        const trainersCollection = database.collection("trainers");
 
         app.get('/api/v1/logout', async (req, res) => {
             // const user = req.body;
@@ -139,10 +140,10 @@ async function run() {
 
             const filter = { email: user?.email };
             // console.log(filter)
-            console.log(user.role)
+            // console.log(user.role)
 
             const existingUser = await usersCollection.findOne(filter);
-            console.log(existingUser)
+            // console.log(existingUser)
 
             if (existingUser) {
                 return res.send({ message: 'user already exists', insertedId: null })
@@ -163,6 +164,7 @@ async function run() {
                             role: "member"
                         },
                     };
+                    console.log(user.role)
                     const result = await usersCollection.updateOne(filter, updateRole, options);
                     res.send(result)
                 }
@@ -194,6 +196,19 @@ async function run() {
             }
             else {
                 const result = await subscribersCollection.insertOne(subscriber);
+                res.send(result);
+            }
+        })
+
+        app.post('/api/v1/trainers', async (req, res) => {
+            const trainer = req.body;
+            const filter = { email: trainer.email };
+            const existingUser = await trainersCollection.findOne(filter);
+            if (existingUser) {
+                return res.send({ message: 'trainer already exists', insertedId: null })
+            }
+            else {
+                const result = await trainersCollection.insertOne(subscriber);
                 res.send(result);
             }
         })
