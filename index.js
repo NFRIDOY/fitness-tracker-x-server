@@ -202,13 +202,15 @@ async function run() {
 
         app.post('/api/v1/trainers', async (req, res) => {
             const trainer = req.body;
+            console.log("trainer")
             const filter = { email: trainer.email };
             const existingUser = await trainersCollection.findOne(filter);
             if (existingUser) {
                 return res.send({ message: 'trainer already exists', insertedId: null })
             }
             else {
-                const result = await trainersCollection.insertOne(subscriber);
+                const result = await trainersCollection.insertOne(trainer);
+                console.log("Done inserting T")
                 res.send(result);
             }
         })
