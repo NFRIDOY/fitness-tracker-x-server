@@ -3,7 +3,7 @@
 
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const jwt = require("jsonwebtoken"); // npm install jsonwebtoken
 const cookieParser = require("cookie-parser"); // npm install cookie-parser
@@ -200,21 +200,62 @@ async function run() {
             }
         })
 
-        app.post('/api/v1/trainers', async (req, res) => {
+        // Triner applying
+        app.put('/api/v1/trainers', async (req, res) => {
             const trainer = req.body;
-            console.log("trainer")
+            // console.log("trainer", trainer)
+            console.log(trainer.email)
             const filter = { email: trainer.email };
-            const existingUser = await trainersCollection.findOne(filter);
-            if (existingUser) {
-                return res.send({ message: 'trainer already exists', insertedId: null })
-            }
-            else {
-                const result = await trainersCollection.insertOne(trainer);
-                console.log("Done inserting T")
-                res.send(result);
-            }
+            const options = { upsert: true };
+            // const existingUser = await usersCollection.findOne(filter);
+            // if (existingUser) {
+            //     return res.send({ message: 'trainer already exists', insertedId: null })
+            // }
+            // else {
+            const applyTrainer = {
+                $set: {
+                    email: trainer.email,
+                    fullName: trainer.fullName,
+                    age: trainer.age,
+                    description: trainer.description,
+                    skills: trainer.skills,
+                    week: trainer.week,
+                    day: trainer.day,
+                    fbLink: trainer.fbLink,
+                    experience: trainer.experience,
+                    photoURL: trainer.photoURL,
+                    role: trainer.role,
+                    status: "pending"
+                },
+            };
+            const result = await usersCollection.updateOne(filter, applyTrainer, options);
+            console.log("Done Trainer applying")
+            res.send(result);
+            // }
         })
 
+        app.get('/api/v1/trainers', async (req, res) => {
+            // const trainers =
+
+            const confirmation = "confirmation";
+            const query = { status: confirmation };
+
+            const result = await trainersCollection.find(query).toArray();
+
+            res.send(result);
+        })
+
+        app.get('/api/v1/trainers/:id', async (req, res) => {
+            // const trainers =
+            // console.log("req.url" + req.url)
+            // const confirmation = "confirmation";
+            const id = req.params.id;
+            // console.log("req.url" + req.url + req.params.id)
+            const query = { _id: new ObjectId(id) };
+
+            const result = await trainersCollection.findOne(query);
+            res.send(result);
+        })
 
 
 
