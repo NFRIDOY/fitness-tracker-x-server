@@ -200,6 +200,11 @@ async function run() {
             }
         })
 
+        app.get('/api/v1/subscribers', async (req,res) => {
+            const result = await subscribersCollection.find().toArray();
+            res.send(result);
+        })
+
         // Triner applying
         app.put('/api/v1/trainers', async (req, res) => {
             const trainer = req.body;
