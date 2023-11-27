@@ -257,6 +257,20 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/api/v1/dashboard', async (req, res) => {
+            const emailQuery = req.query.email
+
+            console.log(emailQuery)
+            const query = { email: emailQuery }
+            console.log(query)
+
+            // const options = {}
+
+            const result = await usersCollection.findOne(query);
+
+            res.send(result)
+        })
+
 
 
 
