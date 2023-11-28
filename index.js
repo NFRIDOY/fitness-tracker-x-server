@@ -240,10 +240,13 @@ async function run() {
         })
 
         app.get('/api/v1/trainers', async (req, res) => {
+            const queryStatus = req.query.status;
             // const trainers =
 
-            const confirmation = "confirmation";
-            const query = { status: confirmation };
+            // const confirmation = "confirmation";
+            // const query = { status: confirmation };
+            const query = { status: queryStatus };
+            // const query = { };
 
             const result = await trainersCollection.find(query).toArray();
 
