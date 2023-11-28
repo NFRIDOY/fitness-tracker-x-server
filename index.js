@@ -118,7 +118,7 @@ async function run() {
         const database = client.db("FitnessTrackerXDB");
         const usersCollection = database.collection("Users");
         const subscribersCollection = database.collection("subscribers");
-        const trainersCollection = database.collection("trainers");
+        // const trainersCollection = database.collection("trainers");
 
         app.get('/api/v1/logout', async (req, res) => {
             // const user = req.body;
@@ -200,7 +200,7 @@ async function run() {
             }
         })
 
-        app.get('/api/v1/subscribers', async (req,res) => {
+        app.get('/api/v1/subscribers', async (req, res) => {
             const result = await subscribersCollection.find().toArray();
             res.send(result);
         })
@@ -239,8 +239,68 @@ async function run() {
             // }
         })
 
+        app.put('/api/v1/trainer/:email', async (req, res) => {
+            const queryStatus = req.query.status
+            const trainer = req.body;
+            // console.log("trainer", trainer)
+            const email = req.params.email
+            console.log(email)
+            const filter = { email: email };
+            const options = { upsert: true };
+            if (queryStatus === "confirmation") {
+                const applyTrainer = {
+                    $set: {
+                        email: trainer.email,
+                        fullName: trainer.fullName,
+                        age: trainer.age,
+                        description: trainer.description,
+                        skills: trainer.skills,
+                        week: trainer.week,
+                        day: trainer.day,
+                        fbLink: trainer.fbLink,
+                        experience: trainer.experience,
+                        photoURL: trainer.photoURL,
+                        role: "trainer",
+                        status: queryStatus
+                        // status: queryStatus = "confirmation" 
+
+                    },
+                };
+                const result = await usersCollection.updateOne(filter, applyTrainer, options);
+                console.log("Done Trainer rejects")
+                res.send(result);
+                // res.send({ status: "confirmation", result });
+            }
+            else if (queryStatus === "reject") {
+                const applyTrainer = {
+                    $set: {
+                        email: trainer.email,
+                        fullName: trainer.fullName,
+                        age: trainer.age,
+                        description: trainer.description,
+                        skills: trainer.skills,
+                        week: trainer.week,
+                        day: trainer.day,
+                        fbLink: trainer.fbLink,
+                        experience: trainer.experience,
+                        photoURL: trainer.photoURL,
+                        role: trainer.role,
+                        status: queryStatus
+                        // status: queryStatus = "reject"
+
+                    },
+                };
+                const result = await usersCollection.updateOne(filter, applyTrainer, options);
+                console.log("Done Trainer confirmation")
+                // res.send({ status: "reject", result });
+                res.send(result);
+            }
+            // }
+        })
+
         app.get('/api/v1/trainers', async (req, res) => {
             const queryStatus = req.query.status;
+            console.log(queryStatus);
             // const trainers =
 
             // const confirmation = "confirmation";
@@ -248,7 +308,7 @@ async function run() {
             const query = { status: queryStatus };
             // const query = { };
 
-            const result = await trainersCollection.find(query).toArray();
+            const result = await usersCollection.find(query).toArray();
 
             res.send(result);
         })
@@ -261,7 +321,7 @@ async function run() {
             // console.log("req.url" + req.url + req.params.id)
             const query = { _id: new ObjectId(id) };
 
-            const result = await trainersCollection.findOne(query);
+            const result = await usersCollection.findOne(query);
             res.send(result);
         })
 
