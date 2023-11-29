@@ -118,6 +118,7 @@ async function run() {
         const database = client.db("FitnessTrackerXDB");
         const usersCollection = database.collection("Users");
         const subscribersCollection = database.collection("subscribers");
+        const forumsCollection = database.collection("forums");
         // const trainersCollection = database.collection("trainers");
 
         app.get('/api/v1/logout', async (req, res) => {
@@ -338,6 +339,20 @@ async function run() {
 
             res.send(result)
         })
+
+        app.post('/forums', async (req, res) => {
+            const forum = req.body;
+            const result = await forumsCollection.insertOne(forum)
+            res.send(result);
+        })
+
+        // get all
+        app.get('/forums', async (req, res) => {
+            const result = await forumsCollection.find().toArray();
+            res.send(result);
+        })
+
+
 
 
 
