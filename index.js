@@ -188,7 +188,7 @@ async function run() {
 
             const filter = { email: userEmail };
             // console.log(user.role)
-            
+
             const result = await usersCollection.findOne(filter);
             // console.log(result)
             res.send(result)
@@ -364,9 +364,32 @@ async function run() {
             const result = await forumsCollection.find().toArray();
             res.send(result);
         })
+        app.get('/api/v1/forums/:id', async (req, res) => {
+            const id = req.params.id;
+            // const {vote} = req.body;
+
+            const filter = { _id: new ObjectId(id) };
+
+            // const updateVote = {
+            //     $set: {
+            //         vote: vote
+            //     },
+            // };
+            const result = await forumsCollection.findOne(filter);
+            res.send(result);
+        })
         app.patch('/api/v1/forums/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await forumsCollection.find().toArray();
+            const {vote} = req.body;
+
+            const filter = { _id: new ObjectId(id) };
+
+            const updateVote = {
+                $set: {
+                    vote: vote
+                },
+            };
+            const result = await forumsCollection.updateOne(filter,updateVote);
             res.send(result);
         })
 
