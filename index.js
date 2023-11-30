@@ -182,6 +182,18 @@ async function run() {
 
         })
 
+        app.get("/api/v1/users", async (req, res) => {
+
+            const userEmail = req.query.email;
+
+            const filter = { email: userEmail };
+            // console.log(user.role)
+            
+            const result = await usersCollection.findOne(filter);
+            // console.log(result)
+            res.send(result)
+        })
+
         // Logout 
 
 
@@ -329,9 +341,9 @@ async function run() {
         app.get('/api/v1/dashboard', async (req, res) => {
             const emailQuery = req.query.email
 
-            console.log(emailQuery)
+            // console.log(emailQuery)
             const query = { email: emailQuery }
-            console.log(query)
+            // console.log(query)
 
             // const options = {}
 
@@ -340,14 +352,20 @@ async function run() {
             res.send(result)
         })
 
-        app.post('/forums', async (req, res) => {
+        app.post('/api/v1/forums', async (req, res) => {
             const forum = req.body;
+            console.log(forum)
             const result = await forumsCollection.insertOne(forum)
             res.send(result);
         })
 
         // get all
-        app.get('/forums', async (req, res) => {
+        app.get('/api/v1/forums', async (req, res) => {
+            const result = await forumsCollection.find().toArray();
+            res.send(result);
+        })
+        app.patch('/api/v1/forums/:id', async (req, res) => {
+            const id = req.params.id;
             const result = await forumsCollection.find().toArray();
             res.send(result);
         })
