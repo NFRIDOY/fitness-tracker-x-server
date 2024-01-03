@@ -400,7 +400,7 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/api/v1/classTimes', async (req, res) => {
+        app.get('/api/v1/availableClassTimes', async (req, res) => {
             const getEmailQuery = req.query.email;
 
             const query  = { email: getEmailQuery };
