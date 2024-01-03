@@ -400,6 +400,20 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/api/v1/classTimes', async (req, res) => {
+            const getEmailQuery = req.query.email;
+
+            const query  = { email: getEmailQuery };
+            // console.log(query);
+
+            const result = await usersCollection.findOne(query);
+
+            // console.log(result);
+
+            res.send(result);
+
+        })
+
 
 
 
