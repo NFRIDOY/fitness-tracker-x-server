@@ -230,6 +230,7 @@ async function run() {
             //     return res.send({ message: 'trainer already exists', insertedId: null })
             // }
             // else {
+            // console.log(applyTrainer)
             const applyTrainer = {
                 $set: {
                     email: trainer.email,
@@ -237,8 +238,10 @@ async function run() {
                     age: trainer.age,
                     description: trainer.description,
                     skills: trainer.skills,
-                    week: trainer.week,
-                    day: trainer.day,
+                    // week: trainer.week,
+                    // day: trainer.day,
+                    weeklyDays: trainer.weeklyDays,
+                    timesInDay: trainer.timesInDay,
                     fbLink: trainer.fbLink,
                     experience: trainer.experience,
                     photoURL: trainer.photoURL,
@@ -268,8 +271,10 @@ async function run() {
                         age: trainer.age,
                         description: trainer.description,
                         skills: trainer.skills,
-                        week: trainer.week,
-                        day: trainer.day,
+                        // week: trainer.week,
+                        // day: trainer.day,
+                        weeklyDays: trainer.weeklyDays,
+                        timesInDay: trainer.timesInDay,
                         fbLink: trainer.fbLink,
                         experience: trainer.experience,
                         photoURL: trainer.photoURL,
@@ -292,8 +297,10 @@ async function run() {
                         age: trainer.age,
                         description: trainer.description,
                         skills: trainer.skills,
-                        week: trainer.week,
-                        day: trainer.day,
+                        // week: trainer.week,
+                        // day: trainer.day,
+                        weeklyDays: trainer.weeklyDays,
+                        timesInDay: trainer.timesInDay,
                         fbLink: trainer.fbLink,
                         experience: trainer.experience,
                         photoURL: trainer.photoURL,
@@ -380,7 +387,7 @@ async function run() {
         })
         app.patch('/api/v1/forums/:id', async (req, res) => {
             const id = req.params.id;
-            const {vote} = req.body;
+            const { vote } = req.body;
 
             const filter = { _id: new ObjectId(id) };
 
@@ -389,7 +396,7 @@ async function run() {
                     vote: vote
                 },
             };
-            const result = await forumsCollection.updateOne(filter,updateVote);
+            const result = await forumsCollection.updateOne(filter, updateVote);
             res.send(result);
         })
 
