@@ -119,6 +119,7 @@ async function run() {
         const usersCollection = database.collection("Users");
         const subscribersCollection = database.collection("subscribers");
         const forumsCollection = database.collection("forums");
+        const classesCollection = database.collection("classes");
         // const trainersCollection = database.collection("trainers");
 
         app.get('/api/v1/logout', async (req, res) => {
@@ -403,13 +404,22 @@ async function run() {
         app.get('/api/v1/availableClassTimes', async (req, res) => {
             const getEmailQuery = req.query.email;
 
-            const query  = { email: getEmailQuery };
+            const query = { email: getEmailQuery };
             // console.log(query);
 
             const result = await usersCollection.findOne(query);
 
             // console.log(result);
 
+            res.send(result);
+
+        })
+
+        app.post('/api/v1/classes', async (req, res) => {
+
+            const newClass = req.body;
+
+            const result = await classesCollection.insertOne(newClass)
             res.send(result);
 
         })
